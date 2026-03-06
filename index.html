@@ -3,178 +3,605 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simplified Pattern File Cleanup Comparison</title>
+    <title>Precision Gallery Slider</title>
+    <!-- Required fonts (optional but matches the design) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        /* ===== CSS VARIABLES ===== */
+        /* ===== GALLERY SLIDER STYLES (extracted from original) ===== */
         :root {
-            --primary-bg: #0f172a; /* Slate 900 */
-            --secondary-bg: #1e293b; /* Slate 800 */
+            --primary-bg: #0f172a;
             --accent-blue: #3b82f6;
-            --text-light: #f1f5f9;
+            --slate-800: #1e293b;
+            --slate-600: #475569;
             --border-color: #e2e8f0;
         }
 
-        .dxf-cleanup-section {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            padding: 4rem 2rem;
-            background-color: #f8fafc;
-            color: #1e293b;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        .dxf-container {
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0 2rem;
         }
 
-        .dxf-header {
+        /* visual-proof-section (slider wrapper) */
+        .visual-proof-section {
+            padding: 5rem 0;
+            background-color: #ffffff;
             text-align: center;
-            margin-bottom: 3rem;
         }
 
-        .dxf-header h2 {
-            font-size: 2.5rem;
+        .visual-proof-section h2 {
+            font-size: 2.25rem;
             font-weight: 800;
             color: var(--primary-bg);
             margin-bottom: 1rem;
         }
 
-        .dxf-header p {
-            font-size: 1.25rem;
-            color: #475569;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        /* Comparison Grid */
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .comparison-box {
-            background: #ffffff;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .comparison-box.solution {
-            border-color: var(--accent-blue);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        .box-header {
-            background-color: var(--primary-bg);
-            color: #ffffff;
-            text-align: center;
-            padding: 1.25rem;
+        .visual-proof-section > .container > p {
             font-size: 1.125rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            color: var(--slate-600);
+            max-width: 700px;
+            margin: 0 auto 3rem;
         }
 
-        .comparison-box.solution .box-header {
-            background-color: var(--accent-blue);
+        /* Gallery Container */
+        .precision-gallery {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            background: var(--primary-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
-        .box-image-wrapper {
-            padding: 2rem;
-            flex-grow: 1;
+        /* Slider Viewport */
+        .gallery-viewport {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background: var(--slate-800);
+        }
+
+        /* Slides Track */
+        .gallery-track {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Individual Slide */
+        .gallery-slide {
+            min-width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f8fafc;
+            position: relative;
+            background: var(--slate-800);
         }
 
-        .comparison-box.solution .box-image-wrapper {
-            background-color: #ffffff;
+        .slide-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 20px;
         }
 
-        .box-image-wrapper img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            border: 1px solid #cbd5e1;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        /* Slide Overlay */
+        .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.7), transparent);
+            padding: 60px 30px 30px;
+            text-align: left;
         }
 
-        /* Simplified Expert Paragraph block */
-        .simplified-expert-analysis {
-            background-color: var(--primary-bg);
-            color: #ffffff;
-            border-radius: 8px;
-            padding: 3rem;
-            text-align: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        .slide-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.5rem;
         }
 
-        .simplified-expert-analysis h3 {
+        .slide-title {
             font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
+            font-weight: 700;
             color: #ffffff;
+            margin-bottom: 0.5rem;
         }
 
-        .simplified-expert-analysis p {
-            font-size: 1.125rem;
-            line-height: 1.6;
-            color: #cbd5e1;
-            max-width: 900px;
-            margin: 0 auto;
+        .slide-description {
+            font-size: 1rem;
+            color: #94a3b8;
+            max-width: 600px;
         }
 
+        /* Navigation Arrows */
+        .gallery-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            color: #ffffff;
+            font-size: 1.25rem;
+        }
+
+        .gallery-nav:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .gallery-nav.prev {
+            left: 20px;
+        }
+
+        .gallery-nav.next {
+            right: 20px;
+        }
+
+        /* Pagination Dots */
+        .gallery-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .gallery-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            padding: 0;
+        }
+
+        .gallery-dot.active {
+            width: 30px;
+            border-radius: 5px;
+            background: var(--accent-blue);
+        }
+
+        .gallery-dot:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Slide Counter */
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: #94a3b8;
+            z-index: 10;
+        }
+
+        .slide-counter .current {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* Pattern Grid Overlay (optional decorative) */
+        .pattern-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+
+        /* Responsive */
         @media (max-width: 900px) {
-            .comparison-grid {
-                grid-template-columns: 1fr;
+            .gallery-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
             }
+            .gallery-nav.prev { left: 10px; }
+            .gallery-nav.next { right: 10px; }
+            .slide-title { font-size: 1.25rem; }
+            .slide-description { font-size: 0.875rem; }
         }
     </style>
 </head>
 <body>
+    <!-- Slider HTML structure -->
+    <section class="visual-proof-section">
+        <div class="container">
+            <h2>Precision You Can Actually See</h2>
+            <p>Every file is engineered layer-by-layer for flawless factory execution.</p>
 
-<section class="dxf-cleanup-section">
-    <div class="dxf-container">
-        
-        <div class="dxf-header">
-            <h2>TECHNICAL DXF FILE PATTERN CLEAN UP</h2>
-            <p>From fragmented exports to factory-approved files. We engineer stability into your production data.</p>
-        </div>
+            <div class="precision-gallery">
+                <div class="gallery-viewport">
+                    <div class="pattern-grid"></div>
 
-        <div class="comparison-grid">
-            <div class="comparison-box">
-                <div class="box-header">
-                    BEFORE (CORRUPTED RAW DXF FILE)
-                </div>
-                <div class="box-image-wrapper">
-                    <img src="https://placehold.co/600x600/e2e8f0/475569?text=Simplified+Messy+DXF+Image+Here" alt="Simplified view of raw DXF file showing key issues with cleaner annotations">
+                    <div class="gallery-track" id="galleryTrack">
+                        <!-- Slide 1: Vector Precision -->
+                        <div class="gallery-slide">
+                            <svg class="slide-image" viewBox="0 0 800 450">
+                                <rect width="800" height="450" fill="#0f172a"/>
+                                <path d="M 200,80 L 600,80 L 620,120 L 600,350 L 400,380 L 200,350 L 180,120 Z" fill="none" stroke="#3b82f6" stroke-width="3"/>
+                                <path d="M 215,95 L 585,95 L 603,130 L 585,335 L 400,362 L 215,335 L 197,130 Z" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6,3"/>
+                                <line x1="400" y1="80" x2="400" y2="380" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,2"/>
+                                <circle cx="400" cy="80" r="5" fill="#22c55e"/>
+                                <circle cx="600" cy="80" r="5" fill="#22c55e"/>
+                                <circle cx="620" cy="120" r="5" fill="#22c55e"/>
+                                <circle cx="600" cy="350" r="5" fill="#22c55e"/>
+                                <circle cx="400" cy="380" r="5" fill="#22c55e"/>
+                                <circle cx="200" cy="350" r="5" fill="#22c55e"/>
+                                <circle cx="180" cy="120" r="5" fill="#22c55e"/>
+                                <text x="400" y="50" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono, monospace" font-size="14">VECTOR PRECISION</text>
+                                <text x="400" y="420" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="12">Perfect bezier curves for CNC cutting</text>
+                            </svg>
+                            <div class="slide-overlay">
+                                <div class="slide-label">01 / 05</div>
+                                <div class="slide-title">Vector Precision</div>
+                                <div class="slide-description">Perfectly smoothed bezier curves ensuring clean CNC cutting paths.</div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2: Marker Layout -->
+                        <div class="gallery-slide">
+                            <svg class="slide-image" viewBox="0 0 800 450">
+                                <rect width="800" height="450" fill="#0f172a"/>
+                                <rect x="20" y="20" width="760" height="30" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+                                <text x="40" y="40" fill="#64748b" font-family="JetBrains Mono" font-size="10">FABRIC WIDTH: 60"</text>
+                                <rect x="50" y="80" width="80" height="120" fill="#3b82f6" opacity="0.3" stroke="#3b82f6" stroke-width="1"/>
+                                <text x="90" y="145" text-anchor="middle" fill="#3b82f6" font-size="10">FRONT</text>
+                                <rect x="150" y="80" width="100" height="140" fill="#22c55e" opacity="0.3" stroke="#22c55e" stroke-width="1"/>
+                                <text x="200" y="155" text-anchor="middle" fill="#22c55e" font-size="10">BACK</text>
+                                <rect x="270" y="90" width="70" height="100" fill="#f59e0b" opacity="0.3" stroke="#f59e0b" stroke-width="1"/>
+                                <text x="305" y="143" text-anchor="middle" fill="#f59e0b" font-size="10">SLEEVE</text>
+                                <rect x="360" y="70" width="90" height="130" fill="#8b5cf6" opacity="0.3" stroke="#8b5cf6" stroke-width="1"/>
+                                <text x="405" y="138" text-anchor="middle" fill="#8b5cf6" font-size="10">COLLAR</text>
+                                <rect x="470" y="85" width="85" height="115" fill="#ec4899" opacity="0.3" stroke="#ec4899" stroke-width="1"/>
+                                <text x="512" y="145" text-anchor="middle" fill="#ec4899" font-size="10">PLACKET</text>
+                                <rect x="575" y="75" width="95" height="135" fill="#06b6d4" opacity="0.3" stroke="#06b6d4" stroke-width="1"/>
+                                <text x="622" y="146" text-anchor="middle" fill="#06b6d4" font-size="10">CUFF</text>
+                                <rect x="50" y="220" width="75" height="110" fill="#3b82f6" opacity="0.3" stroke="#3b82f6" stroke-width="1"/>
+                                <text x="87" y="278" text-anchor="middle" fill="#3b82f6" font-size="10">FRONT</text>
+                                <rect x="145" y="235" width="90" height="125" fill="#22c55e" opacity="0.3" stroke="#22c55e" stroke-width="1"/>
+                                <text x="190" y="302" text-anchor="middle" fill="#22c55e" font-size="10">BACK</text>
+                                <rect x="255" y="210" width="80" height="140" fill="#f59e0b" opacity="0.3" stroke="#f59e0b" stroke-width="1"/>
+                                <text x="295" y="285" text-anchor="middle" fill="#f59e0b" font-size="10">SLEEVE</text>
+                                <rect x="355" y="225" width="70" height="120" fill="#8b5cf6" opacity="0.3" stroke="#8b5cf6" stroke-width="1"/>
+                                <text x="390" y="290" text-anchor="middle" fill="#8b5cf6" font-size="10">COLLAR</text>
+                                <rect x="445" y="215" width="100" height="130" fill="#ef4444" opacity="0.3" stroke="#ef4444" stroke-width="1"/>
+                                <text x="495" y="285" text-anchor="middle" fill="#ef4444" font-size="10">POCKET</text>
+                                <rect x="565" y="230" width="85" height="110" fill="#06b6d4" opacity="0.3" stroke="#06b6d4" stroke-width="1"/>
+                                <text x="607" y="290" text-anchor="middle" fill="#06b6d4" font-size="10">CUFF</text>
+                                <rect x="670" y="370" width="120" height="60" fill="#1e293b" stroke="#334155" rx="4"/>
+                                <text x="730" y="390" text-anchor="middle" fill="#22c55e" font-family="JetBrains Mono" font-size="12">92.4%</text>
+                                <text x="730" y="410" text-anchor="middle" fill="#64748b" font-size="10">UTILIZATION</text>
+                                <text x="400" y="50" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono, monospace" font-size="14">MARKER LAYOUT</text>
+                            </svg>
+                            <div class="slide-overlay">
+                                <div class="slide-label">02 / 05</div>
+                                <div class="slide-title">Optimized Marker Layout</div>
+                                <div class="slide-description">Maximize fabric utilization up to 92%+ with intelligent nesting.</div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3: Before/After -->
+                        <div class="gallery-slide">
+                            <svg class="slide-image" viewBox="0 0 800 450">
+                                <rect width="800" height="450" fill="#0f172a"/>
+                                <rect x="40" y="60" width="330" height="320" fill="#1e293b" stroke="#ef4444" stroke-width="2" rx="4"/>
+                                <text x="205" y="90" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="14">BEFORE</text>
+                                <path d="M 80,120 L 180,130 L 200,150 L 190,250 L 150,290 L 100,280 L 70,200 Z" fill="none" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,2"/>
+                                <line x1="120" y1="140" x2="140" y2="180" stroke="#94a3b8" stroke-width="1"/>
+                                <line x1="160" y1="150" x2="170" y2="200" stroke="#94a3b8" stroke-width="1"/>
+                                <circle cx="90" cy="180" r="2" fill="#ef4444"/>
+                                <circle cx="170" cy="220" r="2" fill="#ef4444"/>
+                                <circle cx="130" cy="260" r="2" fill="#ef4444"/>
+                                <circle cx="200" cy="150" r="2" fill="#ef4444"/>
+                                <circle cx="80" cy="250" r="2" fill="#ef4444"/>
+                                <text x="135" y="200" fill="#ef4444" font-size="8" transform="rotate(-5, 135, 200)">ID:001</text>
+                                <text x="138" y="202" fill="#ef4444" font-size="8" transform="rotate(3, 138, 202)">rule_22</text>
+                                <text x="132" y="198" fill="#ef4444" font-size="8" transform="rotate(-2, 132, 198)">pt_99</text>
+                                <line x1="400" y1="80" x2="400" y2="380" stroke="#334155" stroke-width="2" stroke-dasharray="6,3"/>
+                                <rect x="430" y="60" width="330" height="320" fill="#1e293b" stroke="#22c55e" stroke-width="2" rx="4"/>
+                                <text x="595" y="90" text-anchor="middle" fill="#22c55e" font-family="JetBrains Mono" font-size="14">AFTER</text>
+                                <path d="M 480,120 L 580,130 L 595,150 L 585,250 L 545,290 L 495,280 L 470,200 Z" fill="none" stroke="#3b82f6" stroke-width="2"/>
+                                <path d="M 490,130 L 570,138 L 583,155 L 575,245 L 540,282 L 505,273 L 482,205 Z" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="4,2"/>
+                                <line x1="530" y1="130" x2="530" y2="280" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,2"/>
+                                <circle cx="530" cy="130" r="4" fill="#22c55e"/>
+                                <circle cx="530" cy="280" r="4" fill="#22c55e"/>
+                                <rect x="490" y="170" width="80" height="40" fill="#0f172a" stroke="#334155" rx="2"/>
+                                <text x="530" y="190" text-anchor="middle" fill="#f8fafc" font-size="10" font-weight="600">FRONT</text>
+                                <text x="530" y="202" text-anchor="middle" fill="#94a3b8" font-size="9">SIZE: M</text>
+                                <path d="M 375,220 L 425,220" stroke="#3b82f6" stroke-width="2"/>
+                                <polygon points="420,215 430,220 420,225" fill="#3b82f6"/>
+                                <text x="400" y="245" text-anchor="middle" fill="#3b82f6" font-size="11" font-weight="600">CLEANED</text>
+                                <text x="400" y="50" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono, monospace" font-size="14">FILE COMPARISON</text>
+                            </svg>
+                            <div class="slide-overlay">
+                                <div class="slide-label">03 / 05</div>
+                                <div class="slide-title">Before vs After</div>
+                                <div class="slide-description">Drastic reduction in file complexity with all redundant entities removed.</div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 4: Grading Accuracy -->
+                        <div class="gallery-slide">
+                            <svg class="slide-image" viewBox="0 0 800 450">
+                                <rect width="800" height="450" fill="#0f172a"/>
+                                <text x="200" y="50" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="12">XS</text>
+                                <text x="300" y="50" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="12">S</text>
+                                <text x="400" y="50" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="12">M</text>
+                                <text x="500" y="50" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="12">L</text>
+                                <text x="600" y="50" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="12">XL</text>
+                                <line x1="180" y1="100" x2="620" y2="100" stroke="#3b82f6" stroke-width="2"/>
+                                <path d="M 170,100 L 150,120 L 145,350 L 200,370 L 230,350 L 235,120 Z" fill="none" stroke="#8b5cf6" stroke-width="1.5"/>
+                                <path d="M 175,110 L 158,125 L 155,340 L 198,356 L 220,340 L 228,125 Z" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="3,2"/>
+                                <path d="M 270,100 L 250,120 L 245,350 L 300,370 L 330,350 L 335,120 Z" fill="none" stroke="#22c55e" stroke-width="1.5"/>
+                                <path d="M 275,110 L 258,125 L 255,340 L 298,356 L 320,340 L 328,125 Z" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="3,2"/>
+                                <path d="M 370,100 L 350,120 L 345,350 L 400,370 L 430,350 L 435,120 Z" fill="none" stroke="#3b82f6" stroke-width="2"/>
+                                <path d="M 375,110 L 358,125 L 355,340 L 398,356 L 420,340 L 428,125 Z" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="3,2"/>
+                                <path d="M 470,100 L 450,120 L 445,350 L 500,370 L 530,350 L 535,120 Z" fill="none" stroke="#f59e0b" stroke-width="1.5"/>
+                                <path d="M 475,110 L 458,125 L 455,340 L 498,356 L 520,340 L 528,125 Z" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="3,2"/>
+                                <path d="M 570,100 L 550,120 L 545,350 L 600,370 L 630,350 L 635,120 Z" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+                                <path d="M 575,110 L 558,125 L 555,340 L 598,356 L 620,340 L 628,125 Z" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="3,2"/>
+                                <line x1="295" y1="130" x2="295" y2="180" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2,2"/>
+                                <polygon points="295,175 292,185 298,185" fill="#94a3b8"/>
+                                <text x="295" y="200" text-anchor="middle" fill="#94a3b8" font-size="9">+1/2"</text>
+                                <line x1="395" y1="130" x2="395" y2="180" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2,2"/>
+                                <polygon points="395,175 392,185 398,185" fill="#94a3b8"/>
+                                <text x="395" y="200" text-anchor="middle" fill="#94a3b8" font-size="9">+1/2"</text>
+                                <line x1="495" y1="130" x2="495" y2="180" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2,2"/>
+                                <polygon points="495,175 492,185 498,185" fill="#94a3b8"/>
+                                <text x="495" y="200" text-anchor="middle" fill="#94a3b8" font-size="9">+1/2"</text>
+                                <rect x="650" y="150" width="130" height="120" fill="#1e293b" stroke="#334155" rx="4"/>
+                                <text x="715" y="175" text-anchor="middle" fill="#22c55e" font-family="JetBrains Mono" font-size="14" font-weight="600">6 SIZES</text>
+                                <text x="715" y="200" text-anchor="middle" fill="#64748b" font-size="11">Grade Increment:</text>
+                                <text x="715" y="220" text-anchor="middle" fill="#f8fafc" font-size="13" font-weight="600">1/2" per size</text>
+                                <text x="715" y="245" text-anchor="middle" fill="#64748b" font-size="11">Zero drift</text>
+                                <text x="400" y="420" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono, monospace" font-size="14">GRADING ACCURACY</text>
+                            </svg>
+                            <div class="slide-overlay">
+                                <div class="slide-label">04 / 05</div>
+                                <div class="slide-title">Precision Grading</div>
+                                <div class="slide-description">Standardized size increments with zero drift across all sizes.</div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 5: Seam Specifications -->
+                        <div class="gallery-slide">
+                            <svg class="slide-image" viewBox="0 0 800 450">
+                                <rect width="800" height="450" fill="#0f172a"/>
+                                <rect x="100" y="80" width="600" height="290" fill="#1e293b" stroke="#334155" stroke-width="1" rx="4"/>
+                                <path d="M 150,100 L 650,100 L 640,320 L 160,320 Z" fill="none" stroke="#ef4444" stroke-width="3"/>
+                                <path d="M 175,115 L 625,115 L 617,305 L 183,305 Z" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,3"/>
+                                <path d="M 185,125 L 615,125 L 608,295 L 192,295 Z" fill="none" stroke="#22c55e" stroke-width="1.5"/>
+                                <line x1="130" y1="108" x2="130" y2="130" stroke="#94a3b8" stroke-width="1"/>
+                                <text x="110" y="123" fill="#f59e0b" font-family="JetBrains Mono" font-size="10" text-anchor="end">1/4"</text>
+                                <line x1="150" y1="118" x2="180" y2="118" stroke="#94a3b8" stroke-width="1"/>
+                                <line x1="150" y1="295" x2="180" y2="295" stroke="#94a3b8" stroke-width="1"/>
+                                <line x1="165" y1="125" x2="165" y2="295" stroke="#22c55e" stroke-width="1"/>
+                                <text x="180" y="215" fill="#22c55e" font-family="JetBrains Mono" font-size="10">STITCH</text>
+                                <rect x="280" y="160" width="240" height="80" fill="#0f172a" stroke="#334155" rx="4"/>
+                                <text x="400" y="185" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="11">— CUT LINE</text>
+                                <text x="400" y="205" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="11">- - SEAM ALLOWANCE</text>
+                                <text x="400" y="225" text-anchor="middle" fill="#22c55e" font-family="JetBrains Mono" font-size="11">•• STITCH LINE</text>
+                                <circle cx="183" cy="125" r="4" fill="#3b82f6"/>
+                                <circle cx="617" cy="125" r="4" fill="#3b82f6"/>
+                                <circle cx="183" cy="295" r="4" fill="#3b82f6"/>
+                                <circle cx="617" cy="295" r="4" fill="#3b82f6"/>
+                                <text x="183" y="115" text-anchor="middle" fill="#3b82f6" font-size="8">▼</text>
+                                <text x="617" y="115" text-anchor="middle" fill="#3b82f6" font-size="8">▼</text>
+                                <rect x="250" y="360" width="300" height="60" fill="#1e293b" stroke="#334155" rx="4"/>
+                                <text x="400" y="385" text-anchor="middle" fill="#f8fafc" font-family="JetBrains Mono" font-size="12">SEAM: 1/4" | STITCH: 1/8" | NOTCH: INCLUDED</text>
+                                <text x="400" y="50" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono, monospace" font-size="14">SEAM SPECIFICATIONS</text>
+                            </svg>
+                            <div class="slide-overlay">
+                                <div class="slide-label">05 / 05</div>
+                                <div class="slide-title">Seam Specifications</div>
+                                <div class="slide-description">Precise seam allowances, stitch lines, and notch markings for flawless assembly.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <button class="gallery-nav prev" id="prevBtn" aria-label="Previous slide">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <button class="gallery-nav next" id="nextBtn" aria-label="Next slide">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+
+                    <!-- Dots container (will be populated by JS) -->
+                    <div class="gallery-dots" id="galleryDots"></div>
+
+                    <!-- Counter -->
+                    <div class="slide-counter">
+                        <span class="current" id="currentSlide">01</span> / 05
+                    </div>
                 </div>
             </div>
-
-            <div class="comparison-box solution">
-                <div class="box-header">
-                    AFTER (PRODUCTION-READY CLEANED FILE)
-                </div>
-                <div class="box-image-wrapper">
-                    <img src="https://placehold.co/600x600/ffffff/3b82f6?text=Simplified+Cleaned+DXF+Image+Here" alt="Simplified view of cleaned DXF file with consolidated annotations and closed loops">
-                </div>
-            </div>
         </div>
+    </section>
 
-        <div class="simplified-expert-analysis">
-            <h3>⚙️ CAD GERBER ACCUMARK EXPERT DXF CLEANUP: forensic geometry logic</h3>
-            <p>
-                Unclosed loops, duplicated stacked entities causing metadata corruption, and rogue markers were detected. Our expert Gerber geometry logic merges polyline segments, purges duplicate data consolidating annotations, and maps entities to standard layers. Results in restored file geometric integrity and stable piece geometry for seamless production. All Piece 1 and Piece 2 on both sides are position identically. All stacked repeating text on the messy side is visible, stacked perfectly, and legible, while all text on the clean side is single, clean, and legible. All text and markers are crystal clear and perfectly legible.
-            </p>
-        </div>
+    <script>
+        (function() {
+            // Gallery Slider Functionality
+            const track = document.getElementById('galleryTrack');
+            const slides = document.querySelectorAll('.gallery-slide');
+            const dotsContainer = document.getElementById('galleryDots');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const currentSlideEl = document.getElementById('currentSlide');
+            const gallery = document.querySelector('.precision-gallery');
 
-    </div>
-</section>
+            if (!track || !slides.length || !dotsContainer || !prevBtn || !nextBtn || !currentSlideEl) return;
 
+            let currentIndex = 0;
+            let autoplayInterval;
+            const totalSlides = slides.length;
+
+            // Create dots
+            slides.forEach((_, index) => {
+                const dot = document.createElement('button');
+                dot.className = 'gallery-dot' + (index === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
+                dot.addEventListener('click', () => goToSlide(index));
+                dotsContainer.appendChild(dot);
+            });
+
+            const dots = document.querySelectorAll('.gallery-dot');
+
+            function updateSlider() {
+                // Update track position
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+                // Update dots
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentIndex);
+                });
+
+                // Update counter
+                currentSlideEl.textContent = String(currentIndex + 1).padStart(2, '0');
+            }
+
+            function goToSlide(index) {
+                currentIndex = index;
+                updateSlider();
+                resetAutoplay();
+            }
+
+            function nextSlide() {
+                currentIndex = (currentIndex + 1) % totalSlides;
+                updateSlider();
+            }
+
+            function prevSlide() {
+                currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+                updateSlider();
+            }
+
+            function startAutoplay() {
+                autoplayInterval = setInterval(nextSlide, 5000);
+            }
+
+            function resetAutoplay() {
+                clearInterval(autoplayInterval);
+                startAutoplay();
+            }
+
+            // Event listeners
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetAutoplay();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetAutoplay();
+            });
+
+            // Pause on hover
+            if (gallery) {
+                gallery.addEventListener('mouseenter', () => {
+                    clearInterval(autoplayInterval);
+                });
+
+                gallery.addEventListener('mouseleave', () => {
+                    startAutoplay();
+                });
+            }
+
+            // Touch/swipe support
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            const viewport = document.querySelector('.gallery-viewport');
+
+            if (viewport) {
+                viewport.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                    clearInterval(autoplayInterval);
+                }, { passive: true });
+
+                viewport.addEventListener('touchend', (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    const swipeThreshold = 50;
+                    const diff = touchStartX - touchEndX;
+
+                    if (Math.abs(diff) > swipeThreshold) {
+                        if (diff > 0) {
+                            nextSlide();
+                        } else {
+                            prevSlide();
+                        }
+                    }
+                    startAutoplay();
+                }, { passive: true });
+            }
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                    resetAutoplay();
+                } else if (e.key === 'ArrowRight') {
+                    nextSlide();
+                    resetAutoplay();
+                }
+            });
+
+            // Start autoplay
+            startAutoplay();
+        })();
+    </script>
 </body>
 </html>
